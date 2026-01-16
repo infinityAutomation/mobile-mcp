@@ -2,8 +2,8 @@
   "servers": {
     "mobile-automation": {
       "type": "stdio",
-      "command": "node",
-      "args": ["src/index.js"]
+      "command": "npx",
+      "args": ["mcp-mobile-automation"]
     }
   }
 }
