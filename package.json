@@ -1,20 +1,33 @@
 {
-  "name": "mobile-mcp-server",
+  "name": "mobile-mcp",
   "version": "1.0.0",
-  "description": "MCP server for automating Android and iOS devices using Appium and natural language prompts.",
+  "description": "Model Context Protocol server for mobile app automation using Appium",
+  "main": "src/index.js",
   "type": "module",
-  "main": "build/index.js",
+  "bin": {
+    "mobile-mcp": "./src/index.js"
+  },
   "scripts": {
-    "build": "tsc && chmod 755 build/index.js",
-    "start": "node build/index.js"
+    "start": "node src/index.js"
   },
+  "keywords": [
+    "mcp",
+    "mobile",
+    "automation",
+    "appium",
+    "ios",
+    "android",
+    "testing"
+  ],
+  "author": "",
+  "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.25.2",
-    "appium": "^2.19.0",
-    "zod": "^3.25.76"
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "appium": "^2.11.5",
+    "appium-uiautomator2-driver": "^3.8.3",
+    "appium-xcuitest-driver": "^7.27.2"
   },
-  "devDependencies": {
-    "@types/node": "^20.19.30",
-    "typescript": "^5.0.0"
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

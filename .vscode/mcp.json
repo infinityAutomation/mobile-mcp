@@ -3,7 +3,7 @@
     "mobile-automation": {
       "type": "stdio",
       "command": "node",
-      "args": ["build/index.js"]
+      "args": ["src/index.js"]
     }
   }
 }
