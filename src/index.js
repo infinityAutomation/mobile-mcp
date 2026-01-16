@@ -39,9 +39,86 @@ const server = new Server(
 );
 
 /**
+ * Check if required dependencies are installed
+ */
+async function checkDependencies(platform = null) {
+  const errors = [];
+
+  // Check Appium
+  try {
+    await exec("which appium");
+  } catch (error) {
+    errors.push("Appium is not installed. Install with: npm install -g appium");
+  }
+
+  // Check Node.js version
+  try {
+    const { stdout } = await exec("node --version");
+    const version = stdout.trim().replace('v', '');
+    const major = parseInt(version.split('.')[0]);
+    if (major < 18) {
+      errors.push(`Node.js version ${version} is too old. Required: Node.js >= 18.0.0`);
+    }
+  } catch (error) {
+    errors.push("Node.js is not installed");
+  }
+
+  // Platform-specific checks
+  if (platform === "Android") {
+    // Check adb
+    try {
+      await exec("which adb");
+    } catch (error) {
+      errors.push("Android SDK (adb) is not installed or not in PATH. Install Android SDK and add to PATH.");
+    }
+
+    // Check Appium UiAutomator2 driver
+    try {
+      const { stdout } = await exec("appium driver list --installed");
+      if (!stdout.includes("uiautomator2")) {
+        errors.push("Appium UiAutomator2 driver not installed. Install with: appium driver install uiautomator2");
+      }
+    } catch (error) {
+      // If we can't check drivers, add a warning but don't fail
+      errors.push("Could not verify Appium drivers. Ensure uiautomator2 driver is installed: appium driver install uiautomator2");
+    }
+  } else if (platform === "iOS") {
+    // Check if running on macOS
+    if (process.platform !== "darwin") {
+      errors.push("iOS automation requires macOS");
+    } else {
+      // Check Xcode command line tools
+      try {
+        await exec("which xcrun");
+      } catch (error) {
+        errors.push("Xcode command line tools not installed. Install with: xcode-select --install");
+      }
+
+      // Check Appium XCUITest driver
+      try {
+        const { stdout } = await exec("appium driver list --installed");
+        if (!stdout.includes("xcuitest")) {
+          errors.push("Appium XCUITest driver not installed. Install with: appium driver install xcuitest");
+        }
+      } catch (error) {
+        errors.push("Could not verify Appium drivers. Ensure xcuitest driver is installed: appium driver install xcuitest");
+      }
+    }
+  }
+
+  return errors;
+}
+
+/**
  * Start Appium server
  */
 async function startAppiumServer(port = 4723, host = "localhost") {
+  // Check if Appium is installed
+  const errors = await checkDependencies();
+  if (errors.length > 0) {
+    throw new Error("Missing dependencies:\n" + errors.map(e => `  - ${e}`).join('\n'));
+  }
+
   return new Promise((resolve, reject) => {
     if (appiumProcess) {
       resolve(`Appium server already running at ${appiumUrl}`);
@@ -68,6 +145,7 @@ async function startAppiumServer(port = 4723, host = "localhost") {
     });
 
     appiumProcess.on("error", (error) => {
+      appiumProcess = null;
       reject(`Failed to start Appium: ${error.message}`);
     });
 
@@ -79,6 +157,7 @@ async function startAppiumServer(port = 4723, host = "localhost") {
     // Timeout if server doesn't start
     setTimeout(() => {
       if (!serverStarted) {
+        appiumProcess = null;
         reject("Appium server failed to start within timeout");
       }
     }, 15000);
@@ -108,6 +187,16 @@ async function stopAppiumServer() {
  * Create a new mobile session
  */
 async function createSession(capabilities) {
+  // Extract platform from capabilities
+  const platform = capabilities.alwaysMatch?.["appium:platformName"] || 
+                  capabilities.platformName;
+  
+  // Check platform-specific dependencies
+  const errors = await checkDependencies(platform);
+  if (errors.length > 0) {
+    throw new Error("Missing dependencies for " + platform + ":\n" + errors.map(e => `  - ${e}`).join('\n'));
+  }
+
   try {
     const response = await fetch(`${appiumUrl}/session`, {
       method: "POST",
@@ -123,7 +212,7 @@ async function createSession(capabilities) {
     const data = await response.json();
     currentSession = data.value.sessionId;
     sessionCapabilities = capabilities;
-    currentPlatform = capabilities.alwaysMatch["appium:platformName"];
+    currentPlatform = platform;
 
     return `Session created successfully. Session ID: ${currentSession}`;
   } catch (error) {
