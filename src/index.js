@@ -9,6 +9,13 @@ import {
 import { spawn } from "child_process";
 import { promisify } from "util";
 import { exec as execCallback } from "child_process";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const packageJson = JSON.parse(readFileSync(join(__dirname, "../package.json"), "utf-8"));
 
 const exec = promisify(execCallback);
 
@@ -22,7 +29,7 @@ let currentPlatform = null; // Track current platform: 'iOS', 'Android', or null
 const server = new Server(
   {
     name: "mobile-mcp",
-    version: "1.0.0",
+    version: packageJson.version,
   },
   {
     capabilities: {
@@ -1816,6 +1823,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
  * Start the server
  */
 async function main() {
+  // Check for version flag
+  if (process.argv.includes("--version") || process.argv.includes("-v")) {
+    console.log(packageJson.version);
+    process.exit(0);
+  }
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("Mobile MCP server running on stdio");

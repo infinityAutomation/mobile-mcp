@@ -1,10 +1,12 @@
 {
   "name": "mcp-mobile-automation",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Model Context Protocol server for mobile app automation using Appium",
   "main": "src/index.js",
   "type": "module",
-  "bin": "./src/index.js",
+  "bin": {
+    "mcp-mobile-automation": "./src/index.js"
+  },
   "scripts": {
     "start": "node src/index.js"
   },
