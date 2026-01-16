@@ -7,11 +7,13 @@ A Model Context Protocol (MCP) server for automating iOS and Android mobile appl
 - 🤖 **Appium Integration**: Full Appium 2.0 support for iOS and Android
 - 📱 **Cross-Platform**: Automate both iOS and Android applications
 - 🔍 **Element Finding**: Multiple locator strategies (ID, XPath, Accessibility ID, etc.)
-- 👆 **Gestures**: Tap, swipe, and other touch interactions
+- 👆 **Gestures**: Tap, swipe, long press, and other touch interactions
 - 📸 **Screenshots**: Capture device screenshots
 - 🔧 **App Management**: Install, remove, launch, and close apps
 - 🌳 **Page Source**: Get XML hierarchy of the current screen
 - 💾 **Session Management**: Create and manage automation sessions
+- 🎯 **56 Tools**: Comprehensive automation toolkit with platform-specific filtering
+- 🔄 **Context Switching**: Seamlessly switch between native and webview contexts
 
 ## Prerequisites
 
@@ -55,12 +57,7 @@ Before using this MCP server, ensure you have the following installed:
    npm install
    ```
 
-3. Build the project:
-   ```bash
-   npm run build
-   ```
-
-4. Install Appium drivers:
+3. Install Appium drivers:
    ```bash
    # For Android
    npx appium driver install uiautomator2
@@ -81,7 +78,7 @@ Add this server to your VS Code MCP settings (`.vscode/mcp.json`):
     "mobile-automation": {
       "type": "stdio",
       "command": "node",
-      "args": ["/Users/maheswara/repo/mobile-mcp/build/index.js"]
+      "args": ["/Users/maheswara/repo/mobile-mcp/src/index.js"]
     }
   }
 }
@@ -98,7 +95,7 @@ Add to your Claude Desktop configuration:
   "mcpServers": {
     "mobile-automation": {
       "command": "node",
-      "args": ["/Users/maheswara/repo/mobile-mcp/build/index.js"]
+      "args": ["/Users/maheswara/repo/mobile-mcp/src/index.js"]
     }
   }
 }
@@ -350,14 +347,9 @@ Here's a typical workflow for automating a mobile app:
 
 ## Development
 
-### Watch Mode
+### Start Server
 ```bash
-npm run watch
-```
-
-### Build
-```bash
-npm run build
+npm start
 ```
 
 ## Resources
