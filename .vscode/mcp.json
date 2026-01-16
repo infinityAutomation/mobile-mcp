@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "mobile-automation": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["build/index.js"]
+    }
+  }
+}

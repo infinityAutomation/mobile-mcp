@@ -1,0 +1,20 @@
+{
+  "name": "mobile-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for automating Android and iOS devices using Appium and natural language prompts.",
+  "type": "module",
+  "main": "build/index.js",
+  "scripts": {
+    "build": "tsc && chmod 755 build/index.js",
+    "start": "node build/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.2",
+    "appium": "^2.19.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.30",
+    "typescript": "^5.0.0"
+  }
+}
